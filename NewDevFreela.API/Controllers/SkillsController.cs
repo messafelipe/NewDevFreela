@@ -1,5 +1,8 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using NewDevFreela.API.Entities;
+using NewDevFreela.API.Models;
+using NewDevFreela.API.Persistence;
 
 namespace NewDevFreela.API.Controllers
 {
@@ -7,18 +10,31 @@ namespace NewDevFreela.API.Controllers
     [Route("api/skills")]
     public class SkillsController : ControllerBase
     {
-        //GET api/skills
+        private readonly NewDevFreelaDbContext _context;
+        public SkillsController(NewDevFreelaDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET api/skills
         [HttpGet]
         public IActionResult GetAll()
         {
-            return Ok();
+            var skills = _context.Skills.ToList();
+
+            return Ok(skills);
         }
 
-        //POST api/skills
+        // POST api/skills
         [HttpPost]
-        public IActionResult Post()
+        public IActionResult Post(CreateSkillInputModel model)
         {
-            return Ok();
+            var skill = new Skill(model.Description);
+
+            _context.Skills.Add(skill);
+            _context.SaveChanges();
+
+            return NoContent();
         }
     }
 }
